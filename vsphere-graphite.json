@@ -1,5 +1,4 @@
 {
-  "Consolidate": [ "avg", "max" ],
   "Domain": ".contoso.com",
   "Interval": 60,
   "VCenters": [
