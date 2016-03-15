@@ -473,7 +473,6 @@ func (service *Service) Manage() (string, error) {
             err := carbon.SendMetrics(values)
             if err != nil {
                 errlog.Println("Error sending metrics (trying to reconnect): ", err)
-                carbon.Disconnect()
                 carbon.Connect()
             }
             stdlog.Printf("Sent %d logs to graphite", len(values))
