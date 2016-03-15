@@ -4,6 +4,12 @@ Export vSphere stats to graphite.
 
 Written in go as the integration collectd and python plugin posed too much problems (cpu usage and pipe flood).
 
+# Build status
+
+Automatic build by [drone.io](https://drone.io/)
+
+[![Build Status](https://drone.io/github.com/cblomart/vsphere-graphite/status.png)](https://drone.io/github.com/cblomart/vsphere-graphite/latest)
+
 # Extenal dependencies
 
 Naturaly heavilly based on [govmomi](https://github.com/vmware/govmomi).
