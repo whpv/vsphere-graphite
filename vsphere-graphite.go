@@ -22,6 +22,8 @@ import (
 	"github.com/vmware/govmomi/vim25/methods"
 	"github.com/vmware/govmomi/vim25/mo"
 	"github.com/vmware/govmomi/vim25/types"
+
+        "github.com/marpaia/graphite-golang"
 )
 
 const (
