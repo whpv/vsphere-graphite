@@ -6,7 +6,7 @@
     { "Username": "CONTOSO\\Administrator", "Password": "$P@ssw0rd", "Hostname": "vc2.contoso.com" }
   ],
   "Graphite": {
-    "Hostname": "lvixprfp01.finbel.intra",
+    "Hostname": "graphite.contoso.com",
     "Port": 2003
   },
   "Metrics": [
