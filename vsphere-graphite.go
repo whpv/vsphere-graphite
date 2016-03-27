@@ -159,6 +159,7 @@ func (vcenter *VCenter) Init(config Configuration) {
 	}
 }
 
+
 // Query a vcenter
 func (vcenter *VCenter) Query(config Configuration, channel *chan []graphite.Metric) {
 	stdlog.Println("Setting up query inventory of vcenter: ", vcenter.Hostname)
@@ -169,12 +170,15 @@ func (vcenter *VCenter) Query(config Configuration, channel *chan []graphite.Met
 
 	// Get the client
 	client, err := vcenter.Connect()
-	defer client.Logout(ctx)
 	if err != nil {
 		errlog.Println("Could not connect to vcenter: ", vcenter.Hostname)
 		errlog.Println("Error: ", err)
 		return
 	}
+
+        // wait to be properly connected to defer logout
+	defer client.Logout(ctx)
+
 
 	// Create the view manager
 	var viewManager mo.ViewManager
