@@ -68,7 +68,7 @@ type VCenter struct {
 type MetricDef struct {
 	Metric    string
 	Instances string
-	Key       int
+	Key       int32
 }
 
 // Metrics description in config
@@ -142,7 +142,7 @@ func (vcenter *VCenter) Init(config Configuration) {
 						for _, metricgroup := range vcenter.MetricGroups {
 							if metricgroup.ObjectType == mtype {
 								metricgroup.Metrics = append(metricgroup.Metrics, metricd)
-								stdlog.Println("Appended metric " + metricd.Metric + " identified by " + strconv.Itoa(metricd.Key) + " to vcenter " + vcenter.Hostname + " for " + mtype)
+								stdlog.Println("Appended metric " + metricd.Metric + " identified by " + strconv.FormatInt(int64(metricd.Key), 10) + " to vcenter " + vcenter.Hostname + " for " + mtype)
 								added = true
 								break
 							}
@@ -150,7 +150,7 @@ func (vcenter *VCenter) Init(config Configuration) {
 						if added == false {
 							metricgroup := MetricGroup{ObjectType: mtype, Metrics: []MetricDef{metricd}}
 							vcenter.MetricGroups = append(vcenter.MetricGroups, &metricgroup)
-							stdlog.Println("Appended metric group with " + metricd.Metric + " identified by " + strconv.Itoa(metricd.Key) + " to vcenter " + vcenter.Hostname + " for " + mtype)
+							stdlog.Println("Appended metric group with " + metricd.Metric + " identified by " + strconv.FormatInt(int64(metricd.Key), 10) + " to vcenter " + vcenter.Hostname + " for " + mtype)
 						}
 					}
 				}
@@ -268,7 +268,7 @@ func (vcenter *VCenter) Query(config Configuration, channel *chan []graphite.Met
 	}
 
 	//create a map to resolve metric names
-	metricToName := make(map[int]string)
+	metricToName := make(map[int32]string)
 	for _, metricgroup := range vcenter.MetricGroups {
 		for _, metricdef := range metricgroup.Metrics {
 			metricToName[metricdef.Key] = metricdef.Metric
@@ -280,7 +280,7 @@ func (vcenter *VCenter) Query(config Configuration, channel *chan []graphite.Met
 	queries := []types.PerfQuerySpec{}
 
 	// Common parameters
-	intervalId := 20
+	intervalId := int32(20)
 	endTime := time.Now().Add(time.Duration(-1) * time.Second)
 	startTime := endTime.Add(time.Duration(-config.Interval) * time.Second)
 
