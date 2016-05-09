@@ -1,0 +1,42 @@
+language: go
+go:
+- tip
+sudo: required
+env:
+  global:
+  - COMMIT=${TRAVIS_COMMIT::8}
+  - secure: FoLT8CU6aocfDPDP8EetoYT8Tl5/mikiHv/fu1wKdT9gwDkx6fvxDJEVolRpvxMxoT2ftUwijcpQX50etamPswE7v1PzvO0tY1ISdu9OusODUGnTBMzrjruUhD0pf8Mt2uy8xwU34ZiOp+DW8o8MJQ4Qiv79BBMwDOmCEqoHlbfOG14YZd6O0xPRouMVFAajODtH1igtClet88Q+/NPqn50+NT7CXB+f550xV/s8QXeB22JBpv1tzybEVw9E++76m6vrGrSZZNYdYaGRizdxFcsSaqFaTwl3hygiydwHka3akSF8wwneUeC3ih9gZvXuTpvv5wRsJkqWuxjpdQPWp04heOpg4zBUHGUDHEsded+pPgD/+BfIlDVLG++VHpHfH79BcgNw5A4084wbNZKnxnFC0rcp42dR3Py0YRo3VtoKbT01BI7lWZ4eDgGKFp8vN0NHE4DZi4Y+KGE3d2Ul5nP/XoO8vUQwXGDoqC8iDBb/FYCls87DktSRFYciCd6P+dBGGT0I9ZMw7IuSrUPZtAWR2yRYfo7GDicg57lsrQMigKlGxCy6Bbnk8paZ56nRS8/HkjDZUJL4g+NPGHyfdhZYJ8o03BiqESiGL8aNFVKzTzdZbvSfcnQNVGogEHQhc+lOVLZJKUQ+85w2fCMsAVI8NzyMnE1Zo6r9OCgdhfM=
+  - secure: giIzyLGZqlVtygFB1DkiVf8SQxt1U6X59kUSAeukUHV9Vf+m5IL52SbsiFkzDPhAx8XFQMtHBQiY/L6xxCi+HQwDEnZ8ZzGnOFTYQs3JTu1vjgcKuiwMVWMQwHITWj4mMJxWGWAarwK/TVW6pn136n0BqfNDpCRpzAXaATgeFHAsxk5Sx7QoTDPy+CHyUwZc8c33eNACHRC1du2+MbtcTo73EWBxBHHT9UD8+eSd5ykyJS39VsxgDkH5ClPUiJzEpZSo78x+M2sosKdwE/wTCOnQI7eeyTnmkbN/RvJapyJQfAt13mwVWYSPj+qW5GcQWN2s8Xnw9w8TGWlPGFM7CHy7Lp7FdBRuE+Ggu9IJ9J8SaUbvmS086biajEil7Td7PJrzG8wNLIKNCCBon212tq3fGqeLX7Pmxb35QBWKIYI1Z4EQlPa4noYnInH2TMgcEFWYswJgsHweSI4HzEGCh9F8XI8MtQ5XPRSSYsEtyDBuu2Upl9QNu0YdCMTtsZHJ3osAx0e9Hrqe9Wtrzx53Cju8MGy57va/aLpTcSmB0hjAQLQeH37PoCx/2hVivnvZao9LWcFdLjEHDVW1Lotpkr9utTQUW8XxuoxOZgp1va4UOscc+TpBrgRUyhNczx0JOmC6ulEkLKJ4CqIvKBC9SoDLk9y6m3bth8JqMGFkFiM=
+  - secure: HdeMVcGgMn5eqQmlKfKY/BVKzsbn/vwAN/KozEG1zW4yI4TKR9slksPZf7Vc+zZllQbTkbc6LlV1OUFOPTxElOOLOAzpqvJ8wNhpMixrSfPEko+aDZEUArKgRDoJwpUgGvT4H5xcWEA530ugu15cpuu3OMoGX5BubZKzgQedS3I7XcxpmfpNMgfbYWhIzXCmETbdQ9rnihZc95rjiVx1CEen2T9JG8DeLJe1ek9cS5gBo5c4+vM6K0x6NNNpEgI3ux/zR1Akg35seoHIvRB51SkpwJgF9fwvAmVE0UbqN/HGSLjKGO/wA81QCzdSzKc+mdcmFnqoPzuPZT5iiOGvQCIrM1ORqjE5Wj6wZHeJC1dudjPoC8Xel2AVuhrlp4GwRsl7j6q+G2NPN6V2Rjqq3ts1gXNrDxRZcEoZvR72e8xkKHkNKsQDsD4DORYFV4y6fwXYyXkdPZIN5iYZnDIfBce4rguNWveAEprhdF25MUAr1m3u9O8U0mAuiBNIBH0cVsA0e0qMwvThBPdpA3xepkbD78v41Uoz7KT4hgeZPGxLN98N/8F+ilpcr2VLe0HMATaI0hX1LrlPITK5h5Gnz3sva931WbTQPfEhAiGcZKlrg6mVi9b6vjf8Rku5Z+PSmbKZo8B9SKMJduUwmH9N+0Q4+Cgiv0MQFfZh3z3Xq2Q=
+services:
+- docker
+install:
+- make deps
+script:
+- make all
+deploy:
+  provider: releases
+  api_key:
+    secure: gQrD7qd+CrPyBrpOG8mVNLZtcjMAavW3y+vcavNdlb16Mf9aoEIHdiMhv4Peq5hzfkkS8DgtCY7WwFI2KFtCyQNIVM/G6qlaql2OndYRKwGbD+d3sMniPAOulLM1QJ8Kkm4vvTbxK7kqwyL2CmNFEGPk8tQifhmVRNwSCIo5T1BlBVqD9tmYQ5uOq1trXbyY+GyCQ2a4Ff6zZFja4gb8iMNf4Op33pRFnFJrV7di4+ylJpXKjicQ0H0xM74BASD7aT9jA6+Uk8fsr8h7QKeMdovKp491nhKlVvivKNtB8roB52yQFNgjHJM8TJu4/psx11YOYUZMWiBjCdbzb4/gQt153dduAfJXPP/sQWjsxLLlonHtxS/xKjAvEw2Ei+9gMvvzwlhibYna+PYWfvMXGSwyojfNoGiJiBX8bm30ARSfhLIZepDU9AVRE62CR2ZESSegWeOJoCxTClYcGjDeXoxECpEtqOwbrQRVROHlkH2pLg3eJAzb2rQRT0nnoGydg2LecUMDdxyqSvVct/7kZzWBhTEpHh2ZemPoTbe9YytPlCAKORdUe/u8p+gN92KHPx9TXSHY+k3iNvy+8n0Ot8gio7NTpwTOszVC/r3AtFoBlDEy5KpEbdtqv495F0n+ICZzEYnWVz1VgUhnViO0sExoTaWMB8Y7LmH/k+Ufp0Y=
+  file: ''
+  on:
+    tags: true
+after_success:
+- echo branch $TRAVIS_BRANCH / tag $TRAVIS_TAG / commit $COMMIT
+- docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+- cp releases/linux/amd64/vsphere-graphite docker/linux/
+- cp vsphere-graphite.json docker/linux/
+- docker build -f docker/linux/Dockerfile -t $DOCKER_USERNAME/vsphere-graphite docker/linux/
+- docker tag -f $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:$COMMIT
+- docker tag -f $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:$TRAVIS_BRANCH
+- if [ "$TRAVIS_TAG" != "" ]; then docker tag -f $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:$TRAVIS_TAG; fi
+- if [ "$TRAVIS_TAG" != "" ]; then docker tag -f $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:latest; fi
+- docker push $DOCKER_USERNAME/vsphere-graphite
+- cp releases/linux/arm/vsphere-graphite docker/rpi/
+- cp vsphere-graphite.json docker/linux/
+- docker build -f docker/rpi/Dockerfile -t $DOCKER_USERNAME/rpi-vsphere-graphite docker/rpi/
+- docker tag -f $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:$COMMIT
+- docker tag -f $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:$TRAVIS_BRANCH
+- if [ "$TRAVIS_TAG" != "" ]; then docker tag -f $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:$TRAVIS_TAG; fi
+- if [ "$TRAVIS_TAG" != "" ]; then docker tag -f $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:latest; fi
+- docker push $DOCKER_USERNAME/rpi-vsphere-graphite
