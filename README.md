@@ -18,6 +18,19 @@ But also on [daemon](github.com/takama/daemon) which provides simple daemon/serv
 
 # Run it
 
+## Docker
+
+All builds are pushed to docker:
+  - [cblomart/vsphere-graphite](https://hub.docker.com/r/cblomart/vsphere-graphite/)
+  - [cblomart/rpi-vsphere-graphite](https://hub.docker.com/r/cblomart/rpi-vsphere-graphite/)
+
+Default tags includes:
+  - branch (i.e.: master) for latest commit in the branch
+  - latest for latest release
+
+Configration file can be passed by mounting /etc.
+
+
 ## Deploy
 
 typical GO:
