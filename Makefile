@@ -9,7 +9,7 @@ deps:
 	go get github.com/takama/daemon
 	go get golang.org/x/net/context
 	go get github.com/vmware/govmomi
-	go github.com/marpaia/graphite-golang
+	go get github.com/marpaia/graphite-golang
 
 build-windows-amd64:
 	@$(MAKE) build GOOS=windows GOARCH=amd64 SUFFIX=.exe
