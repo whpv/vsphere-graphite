@@ -10,6 +10,9 @@ Automatic build by [drone.io](https://drone.io/)
 
 [![Build Status](https://drone.io/github.com/cblomart/vsphere-graphite/status.png)](https://drone.io/github.com/cblomart/vsphere-graphite/latest)
 
+[![Build Status](https://travis-ci.org/cblomart/vsphere-graphite.svg?branch=master)](https://travis-ci.org/cblomart/zwaymqtt)
+
+
 # Extenal dependencies
 
 Naturaly heavilly based on [govmomi](https://github.com/vmware/govmomi).
@@ -29,7 +32,6 @@ Default tags includes:
   - latest for latest release
 
 Configration file can be passed by mounting /etc.
-
 
 ## Deploy
 
