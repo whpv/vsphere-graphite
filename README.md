@@ -53,9 +53,13 @@ If you set a domain, it will be automaticaly removed from found objects.
 Metrics collected are defined by associating ObjectType groups with Metric groups.
 They are expressed via the vsphere scheme: *group*.*metric*.*rollup*
 
-An example of configuration file of contoso.com is [there](./vsphere-graphite.json).
+An example of configuration file of contoso.com is [there](./vsphere-graphite-example.json).
 
 You need to place it at /etc/*binaryname*.json (/etc/vsphere-graphite.json per default)
+
+For contoso it would simply be:
+
+  > cp vsphere-graphite-example.json vsphere-graphite.json
 
 ## Run on Commandline
 
