@@ -6,12 +6,7 @@ Written in go as the integration collectd and python plugin posed too much probl
 
 # Build status
 
-Automatic build by [drone.io](https://drone.io/)
-
-[![Build Status](https://drone.io/github.com/cblomart/vsphere-graphite/status.png)](https://drone.io/github.com/cblomart/vsphere-graphite/latest)
-
-[![Build Status](https://travis-ci.org/cblomart/vsphere-graphite.svg?branch=master)](https://travis-ci.org/cblomart/zwaymqtt)
-
+[![Build Status](https://travis-ci.org/cblomart/vsphere-graphite.svg?branch=master)](https://travis-ci.org/cblomart/vsphere-graphite)
 
 # Extenal dependencies
 
