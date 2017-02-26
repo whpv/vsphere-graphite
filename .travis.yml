@@ -18,7 +18,8 @@ deploy:
   provider: releases
   api_key:
     secure: gQrD7qd+CrPyBrpOG8mVNLZtcjMAavW3y+vcavNdlb16Mf9aoEIHdiMhv4Peq5hzfkkS8DgtCY7WwFI2KFtCyQNIVM/G6qlaql2OndYRKwGbD+d3sMniPAOulLM1QJ8Kkm4vvTbxK7kqwyL2CmNFEGPk8tQifhmVRNwSCIo5T1BlBVqD9tmYQ5uOq1trXbyY+GyCQ2a4Ff6zZFja4gb8iMNf4Op33pRFnFJrV7di4+ylJpXKjicQ0H0xM74BASD7aT9jA6+Uk8fsr8h7QKeMdovKp491nhKlVvivKNtB8roB52yQFNgjHJM8TJu4/psx11YOYUZMWiBjCdbzb4/gQt153dduAfJXPP/sQWjsxLLlonHtxS/xKjAvEw2Ei+9gMvvzwlhibYna+PYWfvMXGSwyojfNoGiJiBX8bm30ARSfhLIZepDU9AVRE62CR2ZESSegWeOJoCxTClYcGjDeXoxECpEtqOwbrQRVROHlkH2pLg3eJAzb2rQRT0nnoGydg2LecUMDdxyqSvVct/7kZzWBhTEpHh2ZemPoTbe9YytPlCAKORdUe/u8p+gN92KHPx9TXSHY+k3iNvy+8n0Ot8gio7NTpwTOszVC/r3AtFoBlDEy5KpEbdtqv495F0n+ICZzEYnWVz1VgUhnViO0sExoTaWMB8Y7LmH/k+Ufp0Y=
-  file: ''
+  file_glob: true
+  file: releases/vsphere-graphite_*.tgz  
   on:
     tags: true
 after_success:
@@ -29,14 +30,14 @@ after_success:
 - docker build -f docker/linux/Dockerfile -t $DOCKER_USERNAME/vsphere-graphite docker/linux/
 - docker tag -f $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:$COMMIT
 - docker tag -f $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:$TRAVIS_BRANCH
-- if [ "$TRAVIS_TAG" != "" ]; then docker tag -f $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:$TRAVIS_TAG; fi
-- if [ "$TRAVIS_TAG" != "" ]; then docker tag -f $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:latest; fi
+- if [ "$TRAVIS_TAG" != "" ]; then docker tag $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:$TRAVIS_TAG; fi
+- if [ "$TRAVIS_TAG" != "" ]; then docker tag $DOCKER_USERNAME/vsphere-graphite $DOCKER_USERNAME/vsphere-graphite:latest; fi
 - docker push $DOCKER_USERNAME/vsphere-graphite
 - cp releases/linux/arm/vsphere-graphite docker/rpi/
 - cp vsphere-graphite.json docker/linux/
 - docker build -f docker/rpi/Dockerfile -t $DOCKER_USERNAME/rpi-vsphere-graphite docker/rpi/
 - docker tag -f $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:$COMMIT
 - docker tag -f $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:$TRAVIS_BRANCH
-- if [ "$TRAVIS_TAG" != "" ]; then docker tag -f $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:$TRAVIS_TAG; fi
-- if [ "$TRAVIS_TAG" != "" ]; then docker tag -f $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:latest; fi
+- if [ "$TRAVIS_TAG" != "" ]; then docker tag $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:$TRAVIS_TAG; fi
+- if [ "$TRAVIS_TAG" != "" ]; then docker tag  $DOCKER_USERNAME/rpi-vsphere-graphite $DOCKER_USERNAME/rpi-vsphere-graphite:latest; fi
 - docker push $DOCKER_USERNAME/rpi-vsphere-graphite
