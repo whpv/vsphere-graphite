@@ -9,6 +9,7 @@ import (
 	"time"
 
         "github.com/cblomart/vsphere-graphite/utils"
+        "github.com/cblomart/vsphere-graphite/backend"
 
 	"golang.org/x/net/context"
 
@@ -16,8 +17,6 @@ import (
 	"github.com/vmware/govmomi/vim25/methods"
 	"github.com/vmware/govmomi/vim25/mo"
 	"github.com/vmware/govmomi/vim25/types"
-
-        "github.com/marpaia/graphite-golang"
 )
 
 var stdlog, errlog *log.Logger
@@ -121,8 +120,9 @@ func (vcenter *VCenter) Init(metrics []Metric, standardLogs *log.Logger, errorLo
 }
 
 
+
 // Query a vcenter
-func (vcenter *VCenter) Query(interval int, domain string, channel *chan []graphite.Metric) {
+func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backend.Point) {
 	stdlog.Println("Setting up query inventory of vcenter: ", vcenter.Hostname)
 
 	// Create the contect
@@ -167,10 +167,20 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []graph
 	}
 
 	// Get intresting object types from specified queries
-	objectTypes := []string{}
+	objectTypes := []string{"ClusterComputeResource", "Datastore", "HostSystem", "DistributedVirtualPortgroup", "Network"}
 	for _, group := range vcenter.MetricGroups {
-		objectTypes = append(objectTypes, group.ObjectType)
+		found := false
+		for _, tmp := range objectTypes {
+			if group.ObjectType == tmp {
+				found = true
+				break
+			}
+		}
+		if found == false {
+			objectTypes = append(objectTypes, group.ObjectType)
+		}
 	}
+
 
 	// Loop trought datacenters and create the intersting object reference list
 	mors := []types.ManagedObjectReference{}
@@ -195,27 +205,21 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []graph
 		mors = append(mors, containerView.View...)
 	}
 
-	// get object names
-	objects := []mo.ManagedEntity{}
-
 	//object for propery collection
-	propSpec := &types.PropertySpec{Type: "ManagedEntity", PathSet: []string{"name"}}
 	var objectSet []types.ObjectSpec
 	for _, mor := range mors {
 		objectSet = append(objectSet, types.ObjectSpec{Obj: mor, Skip: types.NewBool(false)})
 	}
 
-	//retrieve name property
-	propreq := types.RetrieveProperties{SpecSet: []types.PropertyFilterSpec{{ObjectSet: objectSet, PropSet: []types.PropertySpec{*propSpec}}}}
+        //properties specifications
+        propSet := []types.PropertySpec{}
+        propSet = append(propSet, types.PropertySpec{Type: "ManagedEntity", PathSet: []string{"name"}})
+        propSet = append(propSet, types.PropertySpec{Type: "VirtualMachine", PathSet: []string{"datastore","network","runtime.host"}})
+        propSet = append(propSet, types.PropertySpec{Type: "HostSystem", PathSet: []string{"parent"}})
+    
+	//retrieve properties
+	propreq := types.RetrieveProperties{SpecSet: []types.PropertyFilterSpec{{ObjectSet: objectSet, PropSet: propSet}}}
 	propres, err := client.PropertyCollector().RetrieveProperties(ctx, propreq)
-	if err != nil {
-		errlog.Println("Could not retrieve object names from vcenter: " + vcenter.Hostname)
-		errlog.Println("Error: ", err)
-		return
-	}
-
-	//load retrieved properties
-	err = mo.LoadRetrievePropertiesResponse(propres, &objects)
 	if err != nil {
 		errlog.Println("Could not retrieve object names from vcenter: " + vcenter.Hostname)
 		errlog.Println("Error: ", err)
@@ -224,9 +228,66 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []graph
 
 	//create a map to resolve object names
 	morToName := make(map[types.ManagedObjectReference]string)
-	for _, object := range objects {
-		morToName[object.Self] = object.Name
-	}
+
+        //create a map to resolve vm to datastore
+        vmToDatastore := make(map[types.ManagedObjectReference]types.ManagedObjectReference)
+
+        //create a map to resolve vm to network
+        vmToNetwork := make(map[types.ManagedObjectReference]types.ManagedObjectReference)
+
+        //create a map to resolve vm to host
+        vmToHost := make(map[types.ManagedObjectReference]types.ManagedObjectReference)
+
+        //create a map to resolve host to parent - in a cluster the parent should be a cluster
+        hostToParent := make(map[types.ManagedObjectReference]types.ManagedObjectReference)
+
+        for _, objectContent := range propres.Returnval {
+                for _, Property := range objectContent.PropSet {
+                	switch propertyName :=  Property.Name; propertyName {
+				case "name":
+	                   		name, ok := Property.Val.(string)
+        	                        if ok {
+						morToName[objectContent.Obj] = name
+                        	        } else {
+						errlog.Println("Name property of " + objectContent.Obj.String() + " was not a string, it was " + fmt.Sprintf("%T", Property.Val))
+                                	}
+				case "datastore":
+					mors, ok := Property.Val.(types.ArrayOfManagedObjectReference)
+                                        if ok {
+						if len(mors.ManagedObjectReference) > 0 {
+							vmToDatastore[objectContent.Obj] = mors.ManagedObjectReference[0]
+						}
+					} else {
+						errlog.Println("Datastore property of " + objectContent.Obj.String() + " was not a ManagedObjectReference, it was " + fmt.Sprintf("%T", Property.Val))
+					}
+				case "network":
+					mors, ok := Property.Val.(types.ArrayOfManagedObjectReference)
+                                        if ok {
+						if len(mors.ManagedObjectReference) > 0 {
+							vmToNetwork[objectContent.Obj] = mors.ManagedObjectReference[0]
+						}
+					} else {
+						errlog.Println("Network property of " + objectContent.Obj.String() + " was not an array of  ManagedObjectReference, it was " + fmt.Sprintf("%T", Property.Val))
+					}
+				case "runtime.host":
+					mor, ok := Property.Val.(types.ManagedObjectReference)
+                                        if ok {
+						vmToHost[objectContent.Obj] = mor
+					} else {
+						errlog.Println("Runtime host property of " + objectContent.Obj.String() + " was not a ManagedObjectReference, it was " + fmt.Sprintf("%T", Property.Val))
+					}
+				case "parent":
+					mor, ok := Property.Val.(types.ManagedObjectReference)
+                                        if ok {
+						hostToParent[objectContent.Obj] = mor
+					} else {
+						errlog.Println("Parent property of " + objectContent.Obj.String() + " was not a ManagedObjectReference, it was " + fmt.Sprintf("%T", Property.Val))
+					}
+				default:
+					errlog.Println("Unhandled property '" + propertyName + "' for " + objectContent.Obj.String() + " whose type is " + fmt.Sprintf("%T", Property.Val))
+                	} 
+                }	
+        }
 
 	//create a map to resolve metric names
 	metricToName := make(map[int32]string)
@@ -243,7 +304,7 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []graph
 	// Common parameters
 	intervalId := int32(20)
 	endTime := time.Now().Add(time.Duration(-1) * time.Second)
-	startTime := endTime.Add(time.Duration(-interval) * time.Second)
+	startTime := endTime.Add(time.Duration(-interval-1) * time.Second)
 
 	// Parse objects
 	for _, mor := range mors {
@@ -255,7 +316,9 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []graph
 				}
 			}
 		}
-		queries = append(queries, types.PerfQuerySpec{Entity: mor, StartTime: &startTime, EndTime: &endTime, MetricId: metricIds, IntervalId: intervalId})
+		if len(metricIds) > 0 {
+			queries = append(queries, types.PerfQuerySpec{Entity: mor, StartTime: &startTime, EndTime: &endTime, MetricId: metricIds, IntervalId: intervalId})
+		}
 	}
 
 	// Query the performances
@@ -268,7 +331,7 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []graph
 	}
 
 	// Get the result
-	values := []graphite.Metric{}
+	values := []backend.Point{}
 	vcName := strings.Replace(vcenter.Hostname, domain, "", -1)
 	for _, base := range perfres.Returnval {
 		pem := base.(*types.PerfEntityMetric)
@@ -294,8 +357,44 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []graph
 			} else if strings.HasSuffix(metricName, ".summation") {
 				value = utils.Sum(serie.Value...)
 			}
-			values = append(values, graphite.NewMetric(key, strconv.FormatInt(value, 10), endTime.Unix()))
-			//stdlog.Printf( key + "\t" + strconv.FormatInt(value,10))
+			//find datastore
+                        datastore := ""
+                        if mor, ok := vmToDatastore[pem.Entity]; ok {
+				datastore = morToName[mor]
+                        }
+			//find host and cluster
+			vmhost := ""
+			cluster := ""
+                        if esximor, ok := vmToHost[pem.Entity]; ok {
+				vmhost = morToName[esximor]
+				if parmor, ok := hostToParent[esximor]; ok {
+					if parmor.Type == "ClusterComputeRessource" {
+						cluster = morToName[parmor] 
+					}
+				}
+                        }
+			//find network
+			network := ""
+			if mor, ok := vmToNetwork[pem.Entity]; ok {
+				network = morToName[mor]
+			}
+                        metricparts := strings.Split(metricName,".")
+                        point := backend.Point{
+        			VCenter: vcName,
+        			ObjectType: entityName,
+        			ObjectName: name,
+        			Group: metricparts[0],
+        			Counter: metricparts[1],
+        			Instance: instanceName,
+        			Rollup: metricparts[2],
+        			Value: strconv.FormatInt(value,10),
+        			Datastore: datastore,
+        			ESXi: vmhost,
+        			Cluster: cluster,
+       				Network: network,
+        			Timestamp: endTime.Unix(),
+                        }
+			values = append(values, point)
 		}
 	}
 	*channel <- values

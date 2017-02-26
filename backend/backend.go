@@ -7,6 +7,23 @@ import (
 )
 
 
+type Point struct {
+        VCenter   	string
+        ObjectType      string
+        ObjectName      string
+        Group		string
+	Counter		string
+        Instance	string
+        Rollup		string
+	Value     	string
+        Datastore       string
+        ESXi            string
+        Cluster         string
+        Network         string
+	Timestamp 	int64
+}
+
+
 //Storage backend
 type Backend struct {
         Hostname string
@@ -44,9 +61,18 @@ func (backend *Backend) Disconnect() {
         }
 }
 
-func (backend *Backend) SendMetrics(metrics []graphite.Metric) {
+func (backend *Backend) SendMetrics(metrics []Point) {
 	if strings.ToLower(backend.Type) == "graphite" {
-        	err := backend.carbon.SendMetrics(metrics)
+                var graphiteMetrics []graphite.Metric
+                for _, point := range metrics {
+                        //key := "vsphere." + vcName + "." + entityName + "." + name + "." + metricName
+                        key :=  "vsphere." + point.VCenter + "." + point.ObjectType + "." + point.ObjectName + "." + point.Group + "." + point.Counter + "." + point.Rollup
+                        if len(point.Instance) > 0 {
+				key += "." + strings.ToLower(strings.Replace(point.Instance, ".", "_", -1))
+                        }
+			graphiteMetrics = append(graphiteMetrics, graphite.Metric{Name: key  , Value: point.Value, Timestamp: point.Timestamp}) 
+                }
+        	err := backend.carbon.SendMetrics(graphiteMetrics)
                 if err != nil {
                 	errlog.Println("Error sending metrics (trying to reconnect): ", err)
                         backend.carbon.Connect()

@@ -12,13 +12,11 @@ import (
 
         "github.com/cblomart/vsphere-graphite/vsphere"
         "github.com/cblomart/vsphere-graphite/config"
+        "github.com/cblomart/vsphere-graphite/backend"
 
 	"github.com/takama/daemon"
 
-
 	"github.com/vmware/govmomi/vim25/types"
-
-        "github.com/marpaia/graphite-golang"
 )
 
 const (
@@ -43,7 +41,7 @@ type EntityQuery struct {
 	Metrics []int
 }
 
-func queryVCenter(vcenter vsphere.VCenter, config config.Configuration, channel *chan []graphite.Metric) {
+func queryVCenter(vcenter vsphere.VCenter, config config.Configuration, channel *chan []backend.Point) {
 	vcenter.Query(config.Interval, config.Domain, channel)
 }
 
@@ -110,7 +108,7 @@ func (service *Service) Manage() (string, error) {
 	signal.Notify(interrupt, os.Interrupt, os.Kill, syscall.SIGTERM)
 
 	// Set up a channel to recieve the metrics
-	metrics := make(chan []graphite.Metric)
+	metrics := make(chan []backend.Point)
 
 	// Set up a ticker to collect metrics at givent interval
 	ticker := time.NewTicker(time.Second * time.Duration(config.Interval))
