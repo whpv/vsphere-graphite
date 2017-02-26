@@ -10,6 +10,7 @@ deps:
 	go get golang.org/x/net/context
 	go get github.com/vmware/govmomi
 	go get github.com/marpaia/graphite-golang
+	go get github.com/influxdata/influxdb/client/v2
 
 build-windows-amd64:
 	@$(MAKE) build GOOS=windows GOARCH=amd64 SUFFIX=.exe
