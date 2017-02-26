@@ -17,7 +17,7 @@ script:
 deploy:
   before_deploy:
   - echo branch $TRAVIS_BRANCH / tag $TRAVIS_TAG / commit $COMMIT
-  - for file in $(ls release/*.tgz); do name=$(echo $file | sed "s/\.tgz//g"); move $file $name_$TRAVIS_TAG.tgz; done;
+  - for file in $(ls release/*.tgz); do name=$(echo $file | sed s/\.tgz//g); move $file $name_$TRAVIS_TAG.tgz; done;
   skip_cleanup: true
   provider: releases
   api_key:
