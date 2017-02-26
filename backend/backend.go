@@ -16,10 +16,10 @@ type Point struct {
         Instance	string
         Rollup		string
 	Value     	string
-        Datastore       string
+        Datastore       []string
         ESXi            string
         Cluster         string
-        Network         string
+        Network         []string
 	Timestamp 	int64
 }
 

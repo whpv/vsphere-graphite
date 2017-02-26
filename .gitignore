@@ -3,3 +3,6 @@ vsphere-graphite.json
 
 # binary file if generated
 vsphere-graphite
+
+#ignore saved files (i.e. nano)
+*.save

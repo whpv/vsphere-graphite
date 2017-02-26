@@ -230,10 +230,10 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backe
 	morToName := make(map[types.ManagedObjectReference]string)
 
         //create a map to resolve vm to datastore
-        vmToDatastore := make(map[types.ManagedObjectReference]types.ManagedObjectReference)
+        vmToDatastore := make(map[types.ManagedObjectReference][]types.ManagedObjectReference)
 
         //create a map to resolve vm to network
-        vmToNetwork := make(map[types.ManagedObjectReference]types.ManagedObjectReference)
+        vmToNetwork := make(map[types.ManagedObjectReference][]types.ManagedObjectReference)
 
         //create a map to resolve vm to host
         vmToHost := make(map[types.ManagedObjectReference]types.ManagedObjectReference)
@@ -255,7 +255,7 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backe
 					mors, ok := Property.Val.(types.ArrayOfManagedObjectReference)
                                         if ok {
 						if len(mors.ManagedObjectReference) > 0 {
-							vmToDatastore[objectContent.Obj] = mors.ManagedObjectReference[0]
+							vmToDatastore[objectContent.Obj] = mors.ManagedObjectReference
 						}
 					} else {
 						errlog.Println("Datastore property of " + objectContent.Obj.String() + " was not a ManagedObjectReference, it was " + fmt.Sprintf("%T", Property.Val))
@@ -264,7 +264,7 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backe
 					mors, ok := Property.Val.(types.ArrayOfManagedObjectReference)
                                         if ok {
 						if len(mors.ManagedObjectReference) > 0 {
-							vmToNetwork[objectContent.Obj] = mors.ManagedObjectReference[0]
+							vmToNetwork[objectContent.Obj] = mors.ManagedObjectReference
 						}
 					} else {
 						errlog.Println("Network property of " + objectContent.Obj.String() + " was not an array of  ManagedObjectReference, it was " + fmt.Sprintf("%T", Property.Val))
@@ -337,6 +337,31 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backe
 		pem := base.(*types.PerfEntityMetric)
 		entityName := strings.ToLower(pem.Entity.Type)
 		name := strings.ToLower(strings.Replace(morToName[pem.Entity], domain, "", -1))
+		//find datastore
+                datastore := []string{}
+                if mors, ok := vmToDatastore[pem.Entity]; ok {
+			for _, mor := range mors {
+				datastore = append(datastore, morToName[mor])
+			}
+                }
+		//find host and cluster
+		vmhost := ""
+		cluster := ""
+                if esximor, ok := vmToHost[pem.Entity]; ok {
+			vmhost = strings.ToLower(strings.Replace(morToName[esximor], domain , "", -1))
+			if parmor, ok := hostToParent[esximor]; ok {
+				if parmor.Type == "ClusterComputeRessource" {
+					cluster = morToName[parmor] 
+				}
+			}
+                }
+		//find network
+		network := []string{}
+		if mors, ok := vmToNetwork[pem.Entity]; ok {
+			for _, mor := range mors {
+				network = append(network, morToName[mor])
+			}
+		}
 		for _, baseserie := range pem.Value {
 			serie := baseserie.(*types.PerfMetricIntSeries)
 			metricName := strings.ToLower(metricToName[serie.Id.CounterId])
@@ -356,27 +381,6 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backe
 				value = serie.Value[len(serie.Value)-1]
 			} else if strings.HasSuffix(metricName, ".summation") {
 				value = utils.Sum(serie.Value...)
-			}
-			//find datastore
-                        datastore := ""
-                        if mor, ok := vmToDatastore[pem.Entity]; ok {
-				datastore = morToName[mor]
-                        }
-			//find host and cluster
-			vmhost := ""
-			cluster := ""
-                        if esximor, ok := vmToHost[pem.Entity]; ok {
-				vmhost = morToName[esximor]
-				if parmor, ok := hostToParent[esximor]; ok {
-					if parmor.Type == "ClusterComputeRessource" {
-						cluster = morToName[parmor] 
-					}
-				}
-                        }
-			//find network
-			network := ""
-			if mor, ok := vmToNetwork[pem.Entity]; ok {
-				network = morToName[mor]
 			}
                         metricparts := strings.Split(metricName,".")
                         point := backend.Point{
