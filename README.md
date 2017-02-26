@@ -14,32 +14,7 @@ Naturaly heavilly based on [govmomi](https://github.com/vmware/govmomi).
 
 But also on [daemon](github.com/takama/daemon) which provides simple daemon/service integration.
 
-# Run it
-
-## Docker
-
-All builds are pushed to docker:
-  - [cblomart/vsphere-graphite](https://hub.docker.com/r/cblomart/vsphere-graphite/)
-  - [cblomart/rpi-vsphere-graphite](https://hub.docker.com/r/cblomart/rpi-vsphere-graphite/)
-
-Default tags includes:
-  - branch (i.e.: master) for latest commit in the branch
-  - latest for latest release
-
-Configration file can be passed by mounting /etc.
-
-## Deploy
-
-typical GO:
-
-  > go get github.com/cblomart/vsphere-graphite
-  
-  
-The executable should be in $GOPATH/bin/
-
-It can be copied on any "same system" (same: os and cpu platform).
-
-## Configure
+# Configure
 
 You need to know you vcenters, logins and password ;-)
 
@@ -55,6 +30,50 @@ You need to place it at /etc/*binaryname*.json (/etc/vsphere-graphite.json per d
 For contoso it would simply be:
 
   > cp vsphere-graphite-example.json vsphere-graphite.json
+
+Backend paramters can also be set via environement paramterers (see docker)
+
+## Backend parameters
+
+  - Type (BACKEND_TYPE): Type of backend to use. Currently "graphite" or "influxdb"
+
+  - Hostname (BACKEND_HOSTNAME): hostname were the backend is running (graphite, influxdb)
+ 
+  - Port (BACKEND_PORT): port to connect to for the backend (graphite, influxdb)
+
+  - Username (BACKEND_USERNAME): username to connect to the backend (influxdb)
+
+  - Password (BACKEND_PASSWORD): password to connect to the backend (influxdb)
+
+  - Database (BACKEND_DATABASE): database to use in the backend (influxdb)
+
+  - NoArray (BACKEND_NOARRAY): don't use csv 'array' as tags, only the first element is used (influxdb)
+
+# Docker
+
+All builds are pushed to docker:
+  - [cblomart/vsphere-graphite](https://hub.docker.com/r/cblomart/vsphere-graphite/)
+  - [cblomart/rpi-vsphere-graphite](https://hub.docker.com/r/cblomart/rpi-vsphere-graphite/)
+
+Default tags includes:
+  - branch (i.e.: master) for latest commit in the branch
+  - latest for latest release
+
+Configration file can be passed by mounting /etc.
+
+Backend parameters can be set via environment variables to make docker user easier (having graphite or influx as another container).
+
+# Run it
+
+## Deploy
+
+typical GO:
+
+  > go get github.com/cblomart/vsphere-graphite
+    
+The executable should be in $GOPATH/bin/
+
+It can be copied on any "same system" (same: os and cpu platform).
 
 ## Run on Commandline
 
@@ -76,10 +95,7 @@ For contoso it would simply be:
 
   > vsphere-graphite remove
   
-... Sounds about it.
-
 # License
-
 
 The MIT License (MIT)
 

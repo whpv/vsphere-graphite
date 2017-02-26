@@ -9,6 +9,9 @@ import (
 	"path"
 	"syscall"
 	"time"
+	"reflect"
+	"strings"
+	"strconv"
 
         "github.com/cblomart/vsphere-graphite/vsphere"
         "github.com/cblomart/vsphere-graphite/config"
@@ -83,6 +86,30 @@ func (service *Service) Manage() (string, error) {
 		return "Could not decode configuration file", err
 	}
 
+	//force backend values to environement varialbles if present
+	s := reflect.ValueOf(&config.Backend).Elem()
+	numfields := s.NumField()
+	for i := 0; i < numfields; i++ {
+		f := s.Field(i)
+		if f.CanSet() {
+			//exported field
+			envname := strings.ToUpper(s.Type().Name() + "_" + s.Type().Field(i).Name)
+			envval := os.Getenv(envname)
+			if len(envval) > 0 {
+				//environment variable set with name
+				switch ftype := f.Type().Name(); ftype {
+					case "string":
+						f.SetString(envval)
+					case "int":
+						val, err := strconv.ParseInt(envval,10,64)
+						if err == nil {
+							f.SetInt(val)
+						}
+				}
+			}
+		}
+	}
+
 	for _, vcenter := range config.VCenters {
 		vcenter.Init(config.Metrics, stdlog, errlog)
 	}
@@ -92,14 +119,6 @@ func (service *Service) Manage() (string, error) {
 		return "Could not initialize backend", err
         }
         defer config.Backend.Disconnect()
-
-
-	// Initialize Graphite
-	//carbon, err := graphite.NewGraphite(config.Graphite.Hostname, config.Graphite.Port)
-	//if err != nil {
-	//	return "Could not initialize graphite", err
-	//}
-	//defer carbon.Disconnect()
 
 	// Set up channel on which to send signal notifications.
 	// We must use a buffered channel or risk missing the signal
