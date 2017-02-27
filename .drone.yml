@@ -1,3 +1,7 @@
+workspace:
+  base: /go
+  path: src/github.com/cblomart/vsphere-graphite
+
 pipeline:
   build:
     image: golang:1.8
