@@ -2,8 +2,7 @@ pipeline:
   build:
     image: golang:1.8
     commands:
-    - goimports -d 2>&1 | grep -v '^$$'
-    - go get
-    - go build
+    - go get ./...
+    - go build .
     - stip vsphere-graphite
-    - tar czf vsphere-graphite.linux.amd64.tgz vsphere-graphite vsphere-graphite.json
+    - tar czf vsphere-graphite.linux.amd64.tgz vsphere-graphite
