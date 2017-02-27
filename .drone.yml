@@ -2,5 +2,5 @@ pipeline:
   build:
     image: golang:1.8
     commands:
-    - make deps
-    - make all
+    - go get
+    - go build
