@@ -2,7 +2,7 @@ clone:
   path: github.com/vmware/govmomi
 
 build:
- image: golang:1.6
+ image: golang:1.8
  commands:
    - goimports -d 2>&1 | grep -v '^$$'
    - go get
