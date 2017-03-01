@@ -8,3 +8,5 @@ pipeline:
     commands:
     - go get
     - go build
+    - go get github.com/mattn/goveralls
+    - goveralls -service drone.io
