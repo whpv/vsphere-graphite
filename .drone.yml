@@ -8,5 +8,6 @@ pipeline:
     commands:
     - go get
     - go build
+    - echo ${COVERALLS_TOKEN}
     - go get github.com/mattn/goveralls
     - goveralls -v -service drone.io
