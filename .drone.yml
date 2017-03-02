@@ -4,14 +4,17 @@ workspace:
 
 pipeline:
   deps:
+    image: golang:1.8
     commands:
     - go get
   simplicity:
+    image: golang:1.8
     group: sanity
     commands:
     - go get honnef.co/go/tools/cmd/gosimple
     - gosimple ./...
   coverage:
+    image: golang:1.8
     group: sanity
     environment:
     - COVERALLS_TOKEN=${COVERALLS_TOKEN}
@@ -19,5 +22,6 @@ pipeline:
     - go get github.com/mattn/goveralls
     - goveralls -service=drone.io
   build:
+    image: golang:1.8
     commands:
     - go build
