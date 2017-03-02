@@ -8,9 +8,9 @@ pipeline:
     - COVERALLS_TOKEN=${COVERALLS_TOKEN}
     image: golang:1.8
     commands:
+    - go get
     - go get honnef.co/go/tools/cmd/gosimple
     - gosimple ./...
-    - go get
     - go build
     - go get github.com/mattn/goveralls
     - goveralls -debug -service=drone.io
