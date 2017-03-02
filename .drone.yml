@@ -9,13 +9,11 @@ pipeline:
     - go get
   simplicity:
     image: golang:1.8
-    group: sanity
     commands:
     - go get honnef.co/go/tools/cmd/gosimple
     - gosimple ./...
   coverage:
     image: golang:1.8
-    group: sanity
     environment:
     - COVERALLS_TOKEN=${COVERALLS_TOKEN}
     commands:
