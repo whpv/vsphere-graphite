@@ -102,7 +102,7 @@ func (vcenter *VCenter) Init(metrics []Metric, standardLogs *log.Logger, errorLo
 						for _, metricgroup := range vcenter.MetricGroups {
 							if metricgroup.ObjectType == mtype {
 								metricgroup.Metrics = append(metricgroup.Metrics, metricd)
-								stdlog.Println("Appended metric " + metricd.Metric + " identified by " + strconv.Itoa(int64(metricd.Key)) + " to vcenter " + vcenter.Hostname + " for " + mtype)
+								stdlog.Println("Appended metric " + metricd.Metric + " identified by " + strconv.Itoa(int(metricd.Key)) + " to vcenter " + vcenter.Hostname + " for " + mtype)
 								added = true
 								break
 							}
@@ -110,7 +110,7 @@ func (vcenter *VCenter) Init(metrics []Metric, standardLogs *log.Logger, errorLo
 						if !added {
 							metricgroup := MetricGroup{ObjectType: mtype, Metrics: []MetricDef{metricd}}
 							vcenter.MetricGroups = append(vcenter.MetricGroups, &metricgroup)
-							stdlog.Println("Appended metric group with " + metricd.Metric + " identified by " + strconv.Itoa(int64(metricd.Key)) + " to vcenter " + vcenter.Hostname + " for " + mtype)
+							stdlog.Println("Appended metric group with " + metricd.Metric + " identified by " + strconv.Itoa(int(metricd.Key)) + " to vcenter " + vcenter.Hostname + " for " + mtype)
 						}
 					}
 				}
