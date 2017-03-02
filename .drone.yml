@@ -3,14 +3,21 @@ workspace:
   path: src/github.com/cblomart/vsphere-graphite
 
 pipeline:
-  build:
-    environment:
-    - COVERALLS_TOKEN=${COVERALLS_TOKEN}
-    image: golang:1.8
+  deps:
     commands:
     - go get
+  simplicity:
+    group: sanity
+    commands:
     - go get honnef.co/go/tools/cmd/gosimple
     - gosimple ./...
-    - go build
+  coverage:
+    group: sanity
+    environment:
+    - COVERALLS_TOKEN=${COVERALLS_TOKEN}
+    commands:
     - go get github.com/mattn/goveralls
     - goveralls -service=drone.io
+  build:
+    commands:
+    - go build
