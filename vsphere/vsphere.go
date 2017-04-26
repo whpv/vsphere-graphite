@@ -391,7 +391,7 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backe
         			Counter: metricparts[1],
         			Instance: instanceName,
         			Rollup: metricparts[2],
-        			Value: strconv.FormatInt(value,10),
+        			Value: value,
         			Datastore: datastore,
         			ESXi: vmhost,
         			Cluster: cluster,

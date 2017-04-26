@@ -20,7 +20,7 @@ type Point struct {
 	Counter		string
         Instance	string
         Rollup		string
-	Value     	string
+	Value     	int64
         Datastore       []string
         ESXi            string
         Cluster         string
@@ -104,7 +104,7 @@ func (backend *Backend) SendMetrics(metrics []Point) {
                         	if len(point.Instance) > 0 {
 					key += "." + strings.ToLower(strings.Replace(point.Instance, ".", "_", -1))
                         	}
-				graphiteMetrics = append(graphiteMetrics, graphite.Metric{Name: key  , Value: point.Value, Timestamp: point.Timestamp}) 
+				graphiteMetrics = append(graphiteMetrics, graphite.Metric{Name: key  , Value: strconv.FormatInt(point.Value,10), Timestamp: point.Timestamp}) 
                 	}
         		err := backend.carbon.SendMetrics(graphiteMetrics)
                 	if err != nil {
