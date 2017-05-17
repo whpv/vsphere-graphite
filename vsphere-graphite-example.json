@@ -5,7 +5,8 @@
     { "Username": "CONTOSO\\Administrator", "Password": "$P@ssw0rd", "Hostname": "vc1.contoso.com" },
     { "Username": "CONTOSO\\Administrator", "Password": "$P@ssw0rd", "Hostname": "vc2.contoso.com" }
   ],
-  "Graphite": {
+  "Backend": {
+    "Type": "graphite",
     "Hostname": "graphite.contoso.com",
     "Port": 2003
   },
