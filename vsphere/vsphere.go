@@ -54,6 +54,8 @@ func (vcenter *VCenter) Connect() (*govmomi.Client, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	stdlog.Println("connecting to vcenter: " + vcenter.Hostname)
+	username := url.QueryEscape(vcenter.Username)
+	password := url.QueryEscape(vcenter.Password)
 	u, err := url.Parse("https://" + vcenter.Username + ":" + vcenter.Password + "@" + vcenter.Hostname + "/sdk")
 	if err != nil {
 		errlog.Println("Could not parse vcenter url: ", vcenter.Hostname)
