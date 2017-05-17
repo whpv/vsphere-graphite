@@ -47,14 +47,14 @@ var	carbon graphite.Graphite
 
 func (backend *Backend) Init(standardLogs *log.Logger, errorLogs *log.Logger)  error {
         stdlog := standardLogs
-        stderr := errorLogs
+        errlog := errorLogs
         switch backendType := strings.ToLower(backend.Type); backendType {
                 case "graphite":
         	        // Initialize Graphite
 	                stdlog.Println("Intializing " + backendType + " backend")
                 	carbon, err := graphite.NewGraphite(backend.Hostname, backend.Port)
                 	if err != nil {
-                	        stderr.Println("Error connecting to graphite")
+                	        errlog.Println("Error connecting to graphite")
                         	return err
                 	}
                 	backend.carbon = carbon
