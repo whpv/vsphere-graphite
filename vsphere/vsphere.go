@@ -352,7 +352,7 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backe
                 if esximor, ok := vmToHost[pem.Entity]; ok {
 			vmhost = strings.ToLower(strings.Replace(morToName[esximor], domain , "", -1))
 			if parmor, ok := hostToParent[esximor]; ok {
-				if parmor.Type == "ClusterComputeRessource" {
+				if parmor.Type == "ClusterComputeResource" {
 					cluster = morToName[parmor] 
 				}
 			}
