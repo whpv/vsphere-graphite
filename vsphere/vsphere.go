@@ -357,6 +357,14 @@ func (vcenter *VCenter) Query(interval int, domain string, channel *chan []backe
 				}
 			}
                 }
+		//find cluster if entity is a host
+		if entityName == "hostsystem" {
+			if parmor, ok := hostToParent[pem.Entity]; ok {
+				if parmor.Type == "ClusterComputeResource" {
+					cluster = morToName[parmor]
+				}
+			}
+		}
 		//find network
 		network := []string{}
 		if mors, ok := vmToNetwork[pem.Entity]; ok {
