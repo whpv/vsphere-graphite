@@ -1,5 +1,5 @@
 FROM scratch
-MAINTAINER cblomart@gmail.com
+MAINTAINER leapar@gmail.com
 
 COPY ./vsphere-graphite /vsphere-graphite
 VOLUME [ "/etc" ]
