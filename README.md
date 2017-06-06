@@ -1,3 +1,15 @@
+# docker
+
+
+```shell
+  
+ docker build -t leapar/vsphere-graphite:0.1 .
+ docker run -d leapar/vsphere-graphite:0.1
+ docker run -v `pwd`/vsphere-graphite.json:/etc/vsphere-graphite.json -d leapar/vsphere-graphite:0.1  
+
+```
+
+
 # vSphere to Graphite
 
 Export vSphere stats to graphite.

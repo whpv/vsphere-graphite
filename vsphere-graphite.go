@@ -85,7 +85,7 @@ func (service *Service) Manage() (string, error) {
 	stdlog.Println("Starting daemon:", path.Base(os.Args[0]))
 
 	// read the configuration
-	file, err := os.Open("./" + path.Base(os.Args[0]) + ".json")
+	file, err := os.Open("/etc/" + path.Base(os.Args[0]) + ".json")
 	if err != nil {
 		return "Could not open configuration file", err
 	}
