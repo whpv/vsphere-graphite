@@ -6,3 +6,15 @@ vsphere-graphite
 
 #ignore saved files (i.e. nano)
 *.save
+
+.idea/workspace.xml
+
+.idea/libraries/Go_SDK.xml
+
+.idea/libraries/GOPATH__vsphere_graphite_whpv_.xml
+
+.idea/modules.xml
+
+.idea/vcs.xml
+
+.idea/vsphere-graphite-whpv.iml

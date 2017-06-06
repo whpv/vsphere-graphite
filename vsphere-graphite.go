@@ -60,7 +60,7 @@ func queryFinder(vcenter vsphere.VCenter, channel *chan backend.FinderStuct) {
 
 // Manage by daemon commands or run the daemon
 func (service *Service) Manage() (string, error) {
-	defer saveHeapProfile()
+	//defer saveHeapProfile()
 	usage := "Usage: myservice install | remove | start | stop | status"
 
 	// if received any kind of command, do it
