@@ -9,6 +9,9 @@
 
 ```
 
+# 资料
+
+https://gist.github.com/leapar/8b383fd853d24dd66b6de535f9ebe597
 
 # vSphere to Graphite
 
